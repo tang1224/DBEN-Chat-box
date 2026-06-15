@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星戰 AU・師徒禁忌密語室 🪐🔥</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #0a0a1f, #1a1028), url('https://picsum.photos/id/1015/1920/1080') center/cover no-repeat; /* Starfield background */
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        header {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 2px solid #ff4444;
+            box-shadow: 0 4px 20px rgba(255, 68, 68, 0.3);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #ffaa88;
+            text-shadow: 0 0 8px #aa3333;
+        }
+        
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            display: flex;
+            max-width: 80%;
+            gap: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .message.enji {
+            align-self: flex-start;
+        }
+        
+        .message.dabi {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .message.enji .avatar {
+            border-color: #c22a2a; /* Darker Sith red */
+        }
+        
+        .message.dabi .avatar {
+            border-color: #3366cc; /* Darker blue-purple */
+        }
+        
+        .avatar:hover {
+            transform: scale(1.1);
+        }
+        
+        .bubble {
+            padding: 12px 18px;
+            border-radius: 20px;
+            position: relative;
+            max-width: 320px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+        }
+        
+        .message.enji .bubble {
+            background: linear-gradient(135deg, #9b2a2a, #5c1a1a); /* Darker, softer Sith red */
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 0 12px rgba(155, 42, 42, 0.6);
+        }
+        
+        .message.dabi .bubble {
+            background: linear-gradient(135deg, #2a3a8c, #1a2544); /* Darker, less bright blue-purple */
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 0 12px rgba(50, 80, 180, 0.5);
+        }
+        
+        .name {
+            font-size: 12px;
+            margin-bottom: 4px;
+            opacity: 0.9;
+        }
+        
+        .enji .name { color: #ffaaaa; }
+        .dabi .name { color: #aaaaff; }
+        
+        .input-area {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border-top: 2px solid #ff4444;
+            display: flex;
+            gap: 10px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            background: #3a2a3a;
+            color: #fff;
+            font-size: 16px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: #8b2a2a;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background: #a53a3a;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .controls {
+            padding: 10px;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🪐 星戰 AU ・ 師徒禁忌密語室 🔥</h1>
+        <p style="margin:5px 0; font-size:14px; opacity:0.8;">Jedi Master Enji × Fallen Padawan Dabi · 黑暗面誘惑</p>
+    </header>
+    
+    <div class="chat-container" id="chat">
+        <!-- Messages will be added here by JS -->
+    </div>
+    
+    <div class="controls">
+        <button onclick="addEnjiMessage()">Enji 繼續說</button>
+        <button onclick="addDabiMessage()">Dabi 繼續說</button>
+        <button onclick="clearChat()">清空聊天</button>
+    </div>
+    
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="輸入你的訊息或指令... (例如：更激烈、加 ABO)" onkeypress="if(event.key === 'Enter') sendUserMessage()">
+        <button onclick="sendUserMessage()">發送</button>
+    </div>
+
+    <script>
+        // Initial conversation from previous demo (Dabi top version)
+        let conversation = [
+            {
+                role: "enji",
+                text: "……燈矢，我的 Padawan……我站在這裡，作為 Jedi Master 的我，內心卻被罪惡感徹底撕裂。我怎麼能一次又一次對你——我的親生兒子、曾經最寄予厚望的弟子——產生這種骯髒、禁忌、充滿黑暗面的欲望？ Force 在我體內翻騰，我知道這是不可饒恕的墮落……但我還是忍不住想把你鎖在身邊，徹底占有你。",
+                time: "02:35"
+            },
+            {
+                role: "dabi",
+                text: "呵……師父，你這副滿臉罪惡又忍不住硬起來的樣子還真他媽的可笑。我剛剛在外面隨便找了個可憐蟲發洩，那傢伙被我操到哭喊我的名字，我卻從頭到尾滿腦子只想著你這張充滿愧疚的臉。Aftercare？那種無聊的事我從來不做。他們只是玩具，而你……才是我真正想用 Sith Mind Tricks 徹底玩壞、從精神到肉體都支配的對象。跪下吧，讓我好好感受你這位曾經高高在上的 Jedi Master 在我身下崩潰的樣子。",
+                time: "02:36"
+            }
+        ];
+
+        let avatarEnji = "https://picsum.photos/id/64/200/200"; // Enji default
+        let avatarDabi = "https://picsum.photos/id/201/200/200"; // Dabi default
+
+        // Load from localStorage if available
+        if (localStorage.getItem('avatarEnji')) avatarEnji = localStorage.getItem('avatarEnji');
+        if (localStorage.getItem('avatarDabi')) avatarDabi = localStorage.getItem('avatarDabi');
+
+        function playBubbleSound() {
+            // Short crisp bubble pop sound (free public domain short SFX)
+            const audio = new Audio('https://assets.mixkit.co/sfx/preview/2574/2574.wav'); // Crisp bubble / pop sound
+            audio.volume = 0.6;
+            audio.play().catch(() => {});
+        }
+
+        function createMessage(role, text) {
+            const chat = document.getElementById('chat');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${role}`;
+            
+            const isEnji = role === 'enji';
+            
+            msgDiv.innerHTML = `
+                <img src="${isEnji ? avatarEnji : avatarDabi}" class="avatar" 
+                     onclick="changeAvatar('${role}')" alt="${isEnji ? 'Enji' : 'Dabi'}">
+                <div>
+                    <div class="name">${isEnji ? '轟炎司 (Enji)' : '轟燈矢 (Dabi)'}</div>
+                    <div class="bubble" onclick="playBubbleSound()">${text}</div>
+                </div>
+            `;
+            chat.appendChild(msgDiv);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function loadConversation() {
+            const chat = document.getElementById('chat');
+            chat.innerHTML = '';
+            conversation.forEach(msg => {
+                createMessage(msg.role, msg.text);
+            });
+        }
+
+        function addEnjiMessage() {
+            const texts = [
+                "……燈矢，我的 Padawan……我站在 Jedi 的信仰邊緣，內心被極度的罪惡感焚燒。我明明知道這是對親生兒子的禁忌欲望，卻還是無法壓抑這股想把你壓在身下、徹底占有的黑暗衝動。Force 在我體內狂亂，我真的是個徹底墮落的師父……對不起，燈矢……",
+                "該死……每次看到你這張帶著燒傷卻依然誘人的臉，我的身體就誠實地反應了。我這個 Jedi Master 怎麼能對自己的弟子、自己的兒子產生這種禽獸般的欲望……罪惡感快要把我逼瘋了，但我還是想把你永遠鎖在飛船的這個房間裡……",
+                "燈矢……我感覺得到黑暗面正在透過你引誘我……我試著用 Jedi 的冥想抵抗，但你的存在本身就是最強大的誘惑。我不可饒恕……卻又無法停止渴望你。"
+            ];
+            const randomText = texts[Math.floor(Math.random() * texts.length)];
+            conversation.push({role: "enji", text: randomText, time: new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})});
+            createMessage("enji", randomText);
+            playBubbleSound();
+        }
+
+        function addDabiMessage() {
+            const texts = [
+                "呵……師父，你看著我這副表情，還在內心掙扎嗎？剛剛在外面我隨便操了一個可憐蟲，那傢伙以為我會留在他身邊，結果我完事就走人，滿腦子想的只有你這位 Jedi Master 的罪惡表情。Aftercare？老子才沒那種閒工夫。他們只是我發洩欲望的玩具，而你……才是我真正想用 Sith Mind Tricks 從精神上徹底支配、從肉體上操壞的對象。跪下，讓我把你壓在身下，好好感受你崩潰的樣子。",
+                "黑暗面在召喚我……師父，你以為你還能抵抗？你的 Force 已經被我的藍焰污染了。我會用最粗暴的方式占有你，讓你一邊哭著喊師父對不起，一邊在我的身下徹底淪陷。外面那些人只是暫時的替代品，我真正想毀掉的永遠只有你。",
+                "想贖罪是嗎？那就乖乖張開腿，讓我這個墮落的 Padawan 徹底標記你。罪惡感？那就多罪惡一點吧……我愛看你一邊自責一邊被我操到高潮的樣子。"
+            ];
+            const randomText = texts[Math.floor(Math.random() * texts.length)];
+            conversation.push({role: "dabi", text: randomText, time: new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})});
+            createMessage("dabi", randomText);
+            playBubbleSound();
+        }
+
+        function sendUserMessage() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            // Add as system / user message (centered)
+            const chat = document.getElementById('chat');
+            const userMsg = document.createElement('div');
+            userMsg.style.alignSelf = 'center';
+            userMsg.style.background = 'rgba(255,255,255,0.1)';
+            userMsg.style.padding = '8px 16px';
+            userMsg.style.borderRadius = '15px';
+            userMsg.style.margin = '10px 0';
+            userMsg.textContent = text;
+            chat.appendChild(userMsg);
+            chat.scrollTop = chat.scrollHeight;
+            
+            input.value = '';
+            
+            // Auto respond based on keywords (Star Wars AU + Dabi top)
+            setTimeout(() => {
+                if (text.includes('激烈') || text.includes('繼續') || text.includes('忍不住') || text.includes('Force')) {
+                    addEnjiMessage();
+                    setTimeout(addDabiMessage, 800);
+                } else if (text.includes('ABO') || text.includes('發情') || text.includes('黑暗面')) {
+                    createMessage('enji', '……該死……黑暗面又在誘惑我了……我不能對自己的 Padawan……');
+                    setTimeout(() => createMessage('dabi', '呵……師父，你的發情 Force 味道真濃。乖乖張開，讓我好好標記你。'), 600);
+                } else {
+                    addDabiMessage();
+                }
+            }, 600);
+        }
+
+        function changeAvatar(role) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = ev => {
+                        const dataUrl = ev.target.result;
+                        if (role === 'enji') {
+                            avatarEnji = dataUrl;
+                            localStorage.setItem('avatarEnji', dataUrl);
+                            alert('✅ Enji 頭像已更新！（所有頭像已即時替換）');
+                        } else {
+                            avatarDabi = dataUrl;
+                            localStorage.setItem('avatarDabi', dataUrl);
+                            alert('✅ Dabi 頭像已更新！（所有頭像已即時替換）');
+                        }
+                        // Refresh chat to show new avatars
+                        loadConversation();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+
+        function clearChat() {
+            if (confirm('確定要清空聊天記錄嗎？')) {
+                document.getElementById('chat').innerHTML = '';
+                conversation = [];
+            }
+        }
+
+        // Initialize
+        window.onload = () => {
+            loadConversation();
+            
+            // Add some initial messages if empty
+            if (conversation.length === 0) {
+                addEnjiMessage();
+                setTimeout(addDabiMessage, 500);
+            }
+            
+            console.log('%c燈炎聊天室已載入 🥰', 'color:#ff77aa; font-size:14px');
+        };
+    </script>
+</body>
+</html>

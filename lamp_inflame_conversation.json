@@ -1,0 +1,22 @@
+{
+  "scenario": "戰後的隱秘公寓，Enji 把受傷的 Dabi 強制帶回家照顧，氣氛緊張壓抑。",
+  "timestamp": "2026-06-14T18:29:07.945658",
+  "conversation": [
+    {
+      "speaker": "轟炎司 (Enji)",
+      "text": "[Demo 回應 1 - 等待真實 Grok 生成]"
+    },
+    {
+      "speaker": "轟燈矢 (Dabi)",
+      "text": "[Demo 回應 2 - 等待真實 Grok 生成]"
+    },
+    {
+      "speaker": "轟炎司 (Enji)",
+      "text": "[Demo 回應 3 - 等待真實 Grok 生成]"
+    },
+    {
+      "speaker": "轟燈矢 (Dabi)",
+      "text": "[Demo 回應 4 - 等待真實 Grok 生成]"
+    }
+  ]
+}
